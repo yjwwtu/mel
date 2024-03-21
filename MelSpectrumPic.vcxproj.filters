@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="librosa">
+      <UniqueIdentifier>{86af0540-4455-47cf-8b17-bbe2f6b89d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app">
+      <UniqueIdentifier>{5751e2ec-d73c-4718-b89f-f3809e79b6fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{9702eee6-6410-40b0-8c8f-4ac3be385bb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="output">
+      <UniqueIdentifier>{725b692a-e069-404a-a5d4-be131d9a3dbb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="librosa\librosa.h">
+      <Filter>librosa</Filter>
+    </ClInclude>
+    <ClInclude Include="librosa\cv_utils.h">
+      <Filter>librosa</Filter>
+    </ClInclude>
+    <ClInclude Include="librosa\audio_utils.h">
+      <Filter>librosa</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="librosa\audio_utils.cpp">
+      <Filter>librosa</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="data\20_16000Hz_5S.wav">
+      <Filter>data</Filter>
+    </Media>
+    <Media Include="data\1710401581_02.wav">
+      <Filter>data</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="output\1.txt">
+      <Filter>output</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
