@@ -1,7 +1,7 @@
 # MelSpectrumPic
 
 #### 介绍
-梅尔频谱图实现librosa的功能
+梅尔频谱图实现librosa的功能,提交准备好OpenCV的库,Linux系统下,Windows没测试,应该是可以用的
 
 ## 1.项目结构
 
