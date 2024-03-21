@@ -23,6 +23,7 @@
 ├── build.sh
 ├── README.md
 └── requirements.txt
+```
 
 ## 2.依赖项
 
@@ -32,7 +33,7 @@
 ## 3.Demo
 
 ```bash
-    bash build.sh
+    make
 ```
 
 # 4.参考资料
