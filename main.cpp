@@ -68,12 +68,35 @@ std::vector<float> power_to_db(const std::vector<float>& magnitude, float ref = 
 
     return db_spec;
 }
+int print(const char*);
 
 int main(int argc, char* argv[])
 {
+    std::string inputPath = "./data/20_16000Hz_5S.wav";
+
+    if (argc >= 2)
+    {
+        inputPath = argv[1];
+    }
+
+    for (size_t i = 0; i < 10; i++)
+    {
+        print(inputPath.c_str());
+    }
+}
+
+int print(const char* inputPath)
+{
+    if (exists(inputPath) == false)
+    {
+        printf("%s not found.", inputPath);
+        return -1;
+    }
+
     clock_t start, end;
     double cpu_time_used;
     start = clock();
+
 
     int sr = -1;
     int n_fft = 2048;
@@ -88,33 +111,20 @@ int main(int argc, char* argv[])
     bool norm = true;
     const char* window = "hann";
     const char* pad_mode = "reflect";
-
-    std::string inputPath = "./data/20_16000Hz_5S.wav";
-
-    if (argc >= 2)
-    {
-        inputPath = argv[1];
-    }
-
-    if (exists(inputPath.c_str()) == false)
-    {
-        printf("%s not found.", inputPath.c_str());
-        return -1;
-    }
-
+       
     std::vector<float> data;
-    int res = read_audio(inputPath.c_str(), data, &sr, false);
+    int res = read_audio(inputPath, data, &sr, false);
     if (res < 0)
     {
-        printf("read wav file error: %s\n", inputPath.c_str());
+        printf("read wav file error: %s\n", inputPath);
         return -1;
     }
 
-    printf("n_fft      = %d\n", n_fft);
-    printf("n_mel      = %d\n", n_mel);
-    printf("hop_length = %d\n", hop_length);
-    printf("fmin, fmax = (%d,%d)\n", fmin, fmax);
-    printf("sr         = %d, data size=%ld\n", sr, data.size());
+    //printf("n_fft      = %d\n", n_fft);
+    //printf("n_mel      = %d\n", n_mel);
+    //printf("hop_length = %d\n", hop_length);
+    //printf("fmin, fmax = (%d,%d)\n", fmin, fmax);
+    //printf("sr         = %d, data size=%ld\n", sr, data.size());
 
     vector<vector<float>> melSpectrogram = librosa::Feature::melspectrogram(data, sr, n_fft, hop_length, window,
         center, pad_mode, power, n_mel, fmin, fmax);
@@ -127,8 +137,8 @@ int main(int argc, char* argv[])
     double min_val, max_val;
     cv::minMaxLoc(log_mel_spec, &min_val, &max_val);
 
-    printf("min_val:%lf", min_val);
-    printf("max_val:%lf", max_val);
+    //printf("min_val:%lf", min_val);
+    //printf("max_val:%lf", max_val);
 
     if (max_val == min_val)
     {
@@ -150,41 +160,9 @@ int main(int argc, char* argv[])
     cv::resize(melColor, melColor, cv::Size(224, 224));
     cv::imwrite("./output/1.jpg", melColor);
 
-
-    //cv::Mat melMat = vector2mat<float>(get_vector(melSpectrogram), 1, mels_h);
-
-    //// 对梅尔频谱进行归一化并转换为8位以便显示
-    //melMat.convertTo(melMat, CV_8UC1); // 转换为8位无符号整型
-
-    //cv::Mat melColor(mels_h, mels_w, CV_8UC4);
-
-    //cv::applyColorMap(melMat, melColor, (cv::ColormapTypes)13);
-
-    //cv::flip(melColor, melColor, -1);
-    //cv::resize(melColor, melColor, cv::Size(224, 224));
-    //cv::imwrite("./output/1.png", melColor);
-
-    //for (size_t i = 0; i <= 20; i++)
-    //{
-    //    std::string outfile = "./output/mel_";
-
-    //    // 若你想对梅尔频谱进行上色，可以创建一个三通道图像并映射颜色
-    //    cv::Mat melColor(mels_h, mels_w, CV_8UC3);
-
-    //    outfile.append(std::to_string(i)).append(".png");
-    //    cv::applyColorMap(melMat, melColor, (cv::ColormapTypes)i); // 使用JET颜色图例
-
-    //    cv::flip(melColor, melColor, -1);
-    //    cv::resize(melColor, melColor, cv::Size(224, 224));
-
-    //    cv::imwrite(outfile, melColor);
-    //}
-
-
     end = clock();
-    cpu_time_used = ((double)(end - start)) / (CLOCKS_PER_SEC/1000);
-    printf("函数运行时间: %.6f 毫秒\n", cpu_time_used);
-    
-    //printf("%s 向你问好!\n", "MelSpectrumPic");
+    cpu_time_used = ((double)(end - start)) / (CLOCKS_PER_SEC / 1000);
+    std::cout << "函数运行时间:" << cpu_time_used << " 毫秒" << std::endl;
+
     return 0;
 }
