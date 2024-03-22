@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="Makefile.mips" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="librosa\audio_utils.cpp">

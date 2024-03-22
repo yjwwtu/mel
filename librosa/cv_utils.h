@@ -12,6 +12,20 @@
 using namespace std;
 
 
+extern "C"
+{
+    __const unsigned short int** __wrap___ctype_b(void)
+    {
+        return __ctype_b_loc();
+    }
+
+    __const unsigned short int** __ctype_b(void)
+    {
+        return __ctype_b_loc();
+    }
+
+}
+
 void print_feature(string name, vector<vector<float>> v)
 {
     printf("------------------------%s------------------------\n", name.c_str());

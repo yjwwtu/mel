@@ -6,11 +6,12 @@
 #include <limits>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#include <time.h>
 
 #include "librosa/audio_utils.h"
 #include "librosa/librosa.h"
 #include "librosa/cv_utils.h"
+
 
 /******************************************************************************
 *  Name        :   Files::exists
@@ -70,12 +71,16 @@ std::vector<float> power_to_db(const std::vector<float>& magnitude, float ref = 
 
 int main(int argc, char* argv[])
 {
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
+
     int sr = -1;
     int n_fft = 2048;
     int hop_length = 500;
     int n_mel = 224;
     int fmin = 20;
-    int fmax = 16000;
+    int fmax = 22050;
     int n_mfcc = 224;
     int dct_type = 2;
     float power = 2.f;
@@ -138,17 +143,12 @@ int main(int argc, char* argv[])
     cv::Mat melMat = vector2mat<float>(log_mel_spec, 1, mels_h);
     melMat.convertTo(melMat, CV_8UC1);
 
-    cv::Mat melColor(mels_h, mels_w, CV_8UC4);
-    cv::applyColorMap(melMat, melColor, cv::ColormapTypes::COLORMAP_MAGMA);
+    cv::Mat melColor;
+    cv::applyColorMap(melMat, melColor, cv::COLORMAP_MAGMA);
 
-    cv::flip(melColor, melColor, -1);
+    cv::flip(melColor, melColor, 0);
     cv::resize(melColor, melColor, cv::Size(224, 224));
-
-    cv::imwrite("./output/1.png", melColor);
-
-
-
-
+    cv::imwrite("./output/1.jpg", melColor);
 
 
     //cv::Mat melMat = vector2mat<float>(get_vector(melSpectrogram), 1, mels_h);
@@ -181,6 +181,10 @@ int main(int argc, char* argv[])
     //}
 
 
-    printf("%s 向你问好!\n", "MelSpectrumPic");
+    end = clock();
+    cpu_time_used = ((double)(end - start)) / (CLOCKS_PER_SEC/1000);
+    printf("函数运行时间: %.6f 毫秒\n", cpu_time_used);
+    
+    //printf("%s 向你问好!\n", "MelSpectrumPic");
     return 0;
 }

@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="Makefile.mips" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="data\1710401581_02.wav" />

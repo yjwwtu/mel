@@ -5,6 +5,7 @@ GC      = @echo compiling $@ && gcc
 AR      = @echo generating static library $@ && ar -crv
 FLAGS   = -g -W -w -Wall -fPIC -std=c++11 -Wno-unused-parameter
 
+
 GCCFLAGS = 
 DEFINES = 
 HEADER  = -I./ -I/usr/include/opencv4/
@@ -29,6 +30,6 @@ TARGET = main
 all: $(SOURCE_FILES)
 	$(LINK) $(FLAGS) $(LINKFLAGS) -o ${PROJECTNAME}.out $^ $(LIBS) ${HEADER}
 clean:
-	rm -rf *.o *.out* bin obj *.db *.txt *.bin ./output/*.png 
+	rm -rf *.o *.out bin obj *.db *.txt *.bin ./output/*.png 
 del:
 	rm -rf *
