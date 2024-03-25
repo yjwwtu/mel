@@ -1,25 +1,30 @@
 # MelSpectrumPic
 
 #### 介绍
-梅尔频谱图实现librosa的功能,提交准备好OpenCV的库,Linux系统下,Windows没测试,应该是可以用的
+梅尔频谱图实现librosa的功能,提前准备好OpenCV和FFMPEG的库,Linux系统下,Windows没测试,应该是可以用的
 
 ## 1.项目结构
 
 ```bash
 .
 ├── data
-├── librosa
-│   ├── eigen3
-│   ├── audio_utils.cpp
-│   ├── audio_utils.h
-│   ├── cv_utils.h
-│   └── librosa.h
+├── app
+│   ├── librosa
+│   |    ├── eigen3
+│   |    └── librosa.h
+│   ├── audio
+│   |    ├── audioutils.cpp
+│   |    └── audioutils.h
+│   ├── opencv
+│   |    ├── cvutils.cpp
+│   |    └── cvdioutils.h
 ├── python
 │   ├── test.py
 │   └── test(1).py
 ├── output
 │   └── 1.txt
 ├── Makefile
+├── Makefile.mips
 ├── main.cpp
 ├── main.py
 ├── build.sh
@@ -28,17 +33,24 @@
 ```
 注:
 python 中的代码为python两种实现方案,librosa和opencv出图
-
+./python/test(1).py 为librosa方案
+./python/test.py 为opencv方案,opencv方案的目的是验证算法移植到c++,两边对齐
 
 ## 2.依赖项
 
 - Eigen3: 项目已经支持[Eigen](librosa/eigen3)，无须安装
 - OpenCV：项目用opencv出图,以便显示梅尔频谱图
+- FFMPEG：项目用ffmpeg解析音频,以便适配当前项目
 
-## 3.Demo
+## 3.编译
 
 ```bash
-    make
+    make clean & make
+```
+
+MIPS T40编译
+```bash
+    make clean & make -f Makefile.mips
 ```
 
 ## 4.Opencv mips 编译
