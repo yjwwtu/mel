@@ -15,15 +15,17 @@ LINKFLAGS =  -DDEBUG
 
 CURRENT_TIME   = $(shell date "+%Y%m%d%H%M%S")
 
-LIBS    += -pthread -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs
+LIBS    += -pthread -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs -lz
+LIBS    += -lavformat -lavutil -lavcodec -lswresample -lswscale
 
 SOURCE_FILES :=\
 		main.cpp\
-		librosa/audio_utils.cpp\
+		app/opencv/cvutils.cpp\
+		app/audio/audioutils.cpp\
+		app/librosa/audio_utils.cpp\
 
 
 PROJECTNAME = MelSpectrumPic
-
 
 TARGET = main
 

@@ -463,7 +463,7 @@ template<typename Derived> class DenseBase
     EIGEN_DEVICE_FUNC
     void visit(Visitor& func) const;
 
-    /** \returns a WithFormat proxy object allowing to print a matrix the with given
+    /** \returns a WithFormat proxy object allowing to PrintMel a matrix the with given
       * format \a fmt.
       *
       * See class IOFormat for some examples.

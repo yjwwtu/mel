@@ -29,7 +29,7 @@
 ///
 /// \brief c++ implemention of librosa
 ///
-namespace librosa{
+namespace librosa {
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -51,7 +51,7 @@ namespace librosa{
             {
                 for (int i = 0; i < left; ++i)
                 {
-                    x_paded[i] = x[left - i];
+                    x_paded[i] = x[static_cast<Eigen::Index>(left) - i];
                 }
                 for (int i = left; i < left + right; ++i)
                 {
@@ -85,12 +85,22 @@ namespace librosa{
             return x_paded;
         }
 
+        /// <summary>
+        /// 短时傅立叶变换
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="n_fft"></param>
+        /// <param name="n_hop"></param>
+        /// <param name="win">窗函数</param>
+        /// <param name="center"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
         static Matrixcf stft(Vectorf& x, int n_fft, int n_hop, const std::string& win, bool center, const std::string& mode)
         {
-            // hanning
+            // hanning(只实现了汉宁窗)
             Vectorf window = 0.5 * (1.f - (Vectorf::LinSpaced(n_fft, 0.f, static_cast<float>(n_fft - 1)) * 2.f * M_PI / n_fft).array().cos());
 
-            int pad_len = center ? n_fft / 2 : 0;
+            int pad_len = center ? (n_fft / 2) : 0;
             Vectorf x_paded = pad(x, pad_len, pad_len, mode, 0.f);
 
             int n_f = n_fft / 2 + 1;
@@ -106,11 +116,26 @@ namespace librosa{
             return X.leftCols(n_f);
         }
 
+        /// <summary>
+        /// 梅尔谱值
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="power"></param>
+        /// <returns></returns>
         static Matrixf spectrogram(Matrixcf& X, float power = 1.f)
         {
             return X.cwiseAbs().array().pow(power);
         }
 
+        /// <summary>
+        /// 梅尔过滤
+        /// </summary>
+        /// <param name="sr"></param>
+        /// <param name="n_fft"></param>
+        /// <param name="n_mels"></param>
+        /// <param name="fmin"></param>
+        /// <param name="fmax"></param>
+        /// <returns></returns>
         static Matrixf melfilter(int sr, int n_fft, int n_mels, int fmin, int fmax)
         {
             int n_f = n_fft / 2 + 1;
@@ -161,6 +186,21 @@ namespace librosa{
             return weights;
         }
 
+        /// <summary>
+        /// 梅尔谱值计算
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="sr"></param>
+        /// <param name="n_fft"></param>
+        /// <param name="n_hop"></param>
+        /// <param name="win"></param>
+        /// <param name="center"></param>
+        /// <param name="mode"></param>
+        /// <param name="power"></param>
+        /// <param name="n_mels"></param>
+        /// <param name="fmin"></param>
+        /// <param name="fmax"></param>
+        /// <returns></returns>
         static Matrixf melspectrogram(Vectorf& x, int sr, int n_fft, int n_hop,
             const std::string& win, bool center,
             const std::string& mode, float power,
@@ -173,6 +213,11 @@ namespace librosa{
             return mel;
         }
 
+        /// <summary>
+        /// 能量转分贝
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         static Matrixf power2db(Matrixf& x)
         {
             auto log_sp = 10.0f * x.array().max(1e-10).log10();
@@ -202,14 +247,17 @@ namespace librosa{
     class Feature
     {
     public:
-        /// \brief      short-time fourier transform similar with librosa.feature.stft
-        /// \param      x             input audio signal
-        /// \param      n_fft         length of the FFT size
-        /// \param      n_hop         number of samples between successive frames
-        /// \param      win           window function. currently only supports 'hann'
-        /// \param      center        same as librosa
-        /// \param      mode          pad mode. support "reflect","symmetric","edge"
-        /// \return     complex-valued matrix of short-time fourier transform coefficients.
+
+        /// <summary>
+        /// short-time fourier transform similar with librosa.feature.stft
+        /// </summary>
+        /// <param name="x">input audio signal</param>
+        /// <param name="n_fft">length of the FFT size</param>
+        /// <param name="n_hop">number of samples between successive frames</param>
+        /// <param name="win">window function. currently only supports 'hann'</param>
+        /// <param name="center">same as librosa</param>
+        /// <param name="mode">pad mode. support "reflect","symmetric","edge"</param>
+        /// <returns>complex-valued matrix of short-time fourier transform coefficients.</returns>
         static std::vector<std::vector<std::complex<float>>> stft(std::vector<float>& x,
             int n_fft, int n_hop,
             const std::string& win, bool center,
@@ -226,19 +274,22 @@ namespace librosa{
             return X_vector;
         }
 
-        /// \brief      compute mel spectrogram similar with librosa.feature.melspectrogram
-        /// \param      x             input audio signal
-        /// \param      sr            sample rate of 'x'
-        /// \param      n_fft         length of the FFT size
-        /// \param      n_hop         number of samples between successive frames
-        /// \param      win           window function. currently only supports 'hann'
-        /// \param      center        same as librosa
-        /// \param      mode          pad mode. support "reflect","symmetric","edge"
-        /// \param      power         exponent for the magnitude melspectrogram
-        /// \param      n_mels        number of mel bands
-        /// \param      f_min         lowest frequency (in Hz)
-        /// \param      f_max         highest frequency (in Hz)
-        /// \return     mel spectrogram matrix
+
+        /// <summary>
+        /// compute mel spectrogram similar with librosa.feature.melspectrogram
+        /// </summary>
+        /// <param name="x">input audio signal</param>
+        /// <param name="sr">sample rate of 'x'</param>
+        /// <param name="n_fft">length of the FFT size</param>
+        /// <param name="n_hop">number of samples between successive frames</param>
+        /// <param name="win">window function. currently only supports 'hann'</param>
+        /// <param name="center">same as librosa</param>
+        /// <param name="mode">pad mode. support "reflect","symmetric","edge"</param>
+        /// <param name="power">exponent for the magnitude melspectrogram</param>
+        /// <param name="n_mels">number of mel bands</param>
+        /// <param name="fmin">lowest frequency (in Hz)</param>
+        /// <param name="fmax">highest frequency (in Hz)</param>
+        /// <returns></returns>
         static std::vector<std::vector<float>> melspectrogram(std::vector<float>& x, int sr,
             int n_fft, int n_hop, const std::string& win, bool center, const std::string& mode,
             float power, int n_mels, int fmin, int fmax)
@@ -254,22 +305,25 @@ namespace librosa{
             return mel_vector;
         }
 
-        /// \brief      compute mfcc similar with librosa.feature.mfcc
-        /// \param      x             input audio signal
-        /// \param      sr            sample rate of 'x'
-        /// \param      n_fft         length of the FFT size
-        /// \param      n_hop         number of samples between successive frames
-        /// \param      win           window function. currently only supports 'hann'
-        /// \param      center        same as librosa
-        /// \param      mode          pad mode. support "reflect","symmetric","edge"
-        /// \param      power         exponent for the magnitude melspectrogram
-        /// \param      n_mels        number of mel bands
-        /// \param      f_min         lowest frequency (in Hz)
-        /// \param      f_max         highest frequency (in Hz)
-        /// \param      n_mfcc        number of mfccs
-        /// \param      norm          ortho-normal dct basis
-        /// \param      type          dct type. currently only supports 'type-II'
-        /// \return     mfcc matrix
+
+        /// <summary>
+        /// ompute mfcc similar with librosa.feature.mfcc
+        /// </summary>
+        /// <param name="x">input audio signal</param>
+        /// <param name="sr">sample rate of 'x'</param>
+        /// <param name="n_fft">length of the FFT size</param>
+        /// <param name="n_hop">number of samples between successive frames</param>
+        /// <param name="win">window function. currently only supports 'hann'</param>
+        /// <param name="center">same as librosa</param>
+        /// <param name="mode">pad mode. support "reflect","symmetric","edge"</param>
+        /// <param name="power">exponent for the magnitude melspectrogram</param>
+        /// <param name="n_mels">number of mel bands</param>
+        /// <param name="fmin">lowest frequency (in Hz)</param>
+        /// <param name="fmax">highest frequency (in Hz)</param>
+        /// <param name="n_mfcc">number of mfccs</param>
+        /// <param name="norm">ortho-normal dct basis</param>
+        /// <param name="type">dct type. currently only supports 'type-II'</param>
+        /// <returns>mfcc matrix</returns>
         static std::vector<std::vector<float>> mfcc(std::vector<float>& x, int sr,
             int n_fft, int n_hop, const std::string& win, bool center, const std::string& mode,
             float power, int n_mels, int fmin, int fmax,
@@ -286,6 +340,46 @@ namespace librosa{
                 Eigen::Map<Vectorf>(row.data(), row.size()) = dct.row(i);
             }
             return mfcc_vector;
+        }
+
+
+        /// <summary>
+        ///  假设 magnitude 是一个浮点数向量
+        /// </summary>
+        /// <param name="magnitude">输入参数</param>
+        /// <param name="ref"></param>
+        /// <param name="amin"></param>
+        /// <param name="top_db">最高</param>
+        /// <returns></returns>
+        static std::vector<float> power2db(const std::vector<float>& magnitude, float ref = 1.0, float amin = 1e-10, float top_db = 80.0)
+        {
+            std::vector<float> db_spec(magnitude.size());
+
+            // 获取最大功率用于top_db参数处理
+            float ref_value = *std::max_element(magnitude.begin(), magnitude.end());
+
+            for (size_t i = 0; i < magnitude.size(); ++i)
+            {
+                float vaule = std::max(magnitude[i], amin);
+                float vaule2 = std::max(amin, ref_value);
+
+                // 计算dB值
+                db_spec[i] = 10.0 * std::log10(vaule);
+                db_spec[i] -= 10.0 * std::log10(vaule2);
+            }
+
+            float log_spec_max = *std::max_element(db_spec.begin(), db_spec.end());
+
+            // 应用top_db限制
+            if (top_db >= 0.0)
+            {
+                for (size_t i = 0; i < magnitude.size(); ++i)
+                {
+                    db_spec[i] = std::max(db_spec[i], log_spec_max - top_db);
+                }
+            }
+
+            return db_spec;
         }
     };
 

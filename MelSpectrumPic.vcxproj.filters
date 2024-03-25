@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="librosa">
-      <UniqueIdentifier>{86af0540-4455-47cf-8b17-bbe2f6b89d94}</UniqueIdentifier>
-    </Filter>
     <Filter Include="app">
       <UniqueIdentifier>{5751e2ec-d73c-4718-b89f-f3809e79b6fc}</UniqueIdentifier>
     </Filter>
@@ -13,16 +10,25 @@
     <Filter Include="output">
       <UniqueIdentifier>{725b692a-e069-404a-a5d4-be131d9a3dbb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="app\opencv">
+      <UniqueIdentifier>{1c38d384-6140-4a89-8616-d4f5b04ebaa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app\librosa">
+      <UniqueIdentifier>{86af0540-4455-47cf-8b17-bbe2f6b89d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app\audio">
+      <UniqueIdentifier>{c859e138-259b-416d-aedb-e909df940ddb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="librosa\librosa.h">
-      <Filter>librosa</Filter>
+    <ClInclude Include="app\opencv\cvutils.h">
+      <Filter>app\opencv</Filter>
     </ClInclude>
-    <ClInclude Include="librosa\cv_utils.h">
-      <Filter>librosa</Filter>
+    <ClInclude Include="app\librosa\librosa.h">
+      <Filter>app\librosa</Filter>
     </ClInclude>
-    <ClInclude Include="librosa\audio_utils.h">
-      <Filter>librosa</Filter>
+    <ClInclude Include="app\audio\audioutils.h">
+      <Filter>app\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -30,10 +36,13 @@
     <None Include="Makefile.mips" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="librosa\audio_utils.cpp">
-      <Filter>librosa</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="app\opencv\cvutils.cpp">
+      <Filter>app\opencv</Filter>
+    </ClCompile>
+    <ClCompile Include="app\audio\audioutils.cpp">
+      <Filter>app\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Media Include="data\20_16000Hz_5S.wav">

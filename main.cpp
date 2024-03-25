@@ -4,71 +4,15 @@
 #include <iostream> 
 #include <cmath> 
 #include <limits>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <time.h>
 
-#include "librosa/audio_utils.h"
-#include "librosa/librosa.h"
-#include "librosa/cv_utils.h"
+#include "app/librosa/librosa.h"
+#include "app/opencv/cvutils.h"
+#include "app/audio/audioutils.h"
 
 
-/******************************************************************************
-*  Name        :   Files::exists
-*  Author      :   cqnews
-*  Version     :   V1.0.0
-*  Data        :   2021.05.07
-*  Describe    :   检测文件是否存在
-******************************************************************************/
-bool exists(const char* name)
-{
-    try
-    {
-        struct stat buffer;
-        memset(&buffer, 0, sizeof(buffer));
-        return (stat(name, &buffer) == 0);
 
-    }
-    catch (...)
-    {
-
-    }
-
-    return false;
-}
-
-// 假设 magnitude 是一个浮点数向量
-std::vector<float> power_to_db(const std::vector<float>& magnitude, float ref = 1.0, float amin = 1e-10, float top_db = 80.0)
-{
-    std::vector<float> db_spec(magnitude.size());
-
-    // 获取最大功率用于top_db参数处理
-    float ref_value = *std::max_element(magnitude.begin(), magnitude.end());
-
-    for (size_t i = 0; i < magnitude.size(); ++i)
-    {
-        float vaule = std::max(magnitude[i], amin);
-        float vaule2 = std::max(amin, ref_value);
-
-        // 计算dB值
-        db_spec[i] = 10.0 * std::log10(vaule);
-        db_spec[i] -= 10.0 * std::log10(vaule2);
-    }
-
-    float log_spec_max = *std::max_element(db_spec.begin(), db_spec.end());
-
-    // 应用top_db限制
-    if (top_db >= 0.0)
-    {
-        for (size_t i = 0; i < magnitude.size(); ++i)
-        {
-            db_spec[i] = std::max(db_spec[i], log_spec_max - top_db);
-        }
-    }
-
-    return db_spec;
-}
-int print(const char*);
+int PrintMel(const char*);
 
 int main(int argc, char* argv[])
 {
@@ -79,25 +23,24 @@ int main(int argc, char* argv[])
         inputPath = argv[1];
     }
 
-    for (size_t i = 0; i < 10; i++)
-    {
-        print(inputPath.c_str());
-    }
+    PrintMel(inputPath.c_str());
+
 }
 
-int print(const char* inputPath)
+int PrintMel(const char* inputPath)
 {
-    if (exists(inputPath) == false)
+    int ret = -1;
+
+    if (AudioUtils::Exists(inputPath) == false)
     {
         printf("%s not found.", inputPath);
         return -1;
     }
 
-    clock_t start, end;
+    clock_t start_t, mel_t, db_t, end_t;
     double cpu_time_used;
-    start = clock();
-
-
+    start_t = clock();
+    
     int sr = -1;
     int n_fft = 2048;
     int hop_length = 500;
@@ -111,34 +54,41 @@ int print(const char* inputPath)
     bool norm = true;
     const char* window = "hann";
     const char* pad_mode = "reflect";
-       
+
     std::vector<float> data;
-    int res = read_audio(inputPath, data, &sr, false);
-    if (res < 0)
+    ret = AudioUtils::ReadAudioData(inputPath, data, sr);
+
+    if (ret < 0)
     {
-        printf("read wav file error: %s\n", inputPath);
-        return -1;
+        return ret;
     }
 
-    //printf("n_fft      = %d\n", n_fft);
-    //printf("n_mel      = %d\n", n_mel);
-    //printf("hop_length = %d\n", hop_length);
-    //printf("fmin, fmax = (%d,%d)\n", fmin, fmax);
-    //printf("sr         = %d, data size=%ld\n", sr, data.size());
+#ifdef DEBUG
+    printf("n_fft      = %d\n", n_fft);
+    printf("n_mel      = %d\n", n_mel);
+    printf("hop_length = %d\n", hop_length);
+    printf("fmin, fmax = (%d,%d)\n", fmin, fmax);
+    printf("sr         = %d, data size=%ld\n", sr, data.size());
+#endif // DEBUG
 
-    vector<vector<float>> melSpectrogram = librosa::Feature::melspectrogram(data, sr, n_fft, hop_length, window,
+    std::vector<std::vector<float>> melSpectrogram = librosa::Feature::melspectrogram(data, sr, n_fft, hop_length, window,
         center, pad_mode, power, n_mel, fmin, fmax);
 
     int mels_w = (int)melSpectrogram.size();
     int mels_h = (int)melSpectrogram[0].size();
 
-    std::vector<float> log_mel_spec = power_to_db(get_vector(melSpectrogram));
+    mel_t = clock();
+    cpu_time_used = ((double)(mel_t - start_t)) / (CLOCKS_PER_SEC / 1000);
+    std::cout << "Mel函数运行时间:" << cpu_time_used << " 毫秒" << std::endl;
+
+    std::vector<float> log_mel_spec = librosa::Feature::power2db(CvUtils::Conver2DToVector(melSpectrogram));
+
+    db_t = clock();
+    cpu_time_used = ((double)(db_t - start_t)) / (CLOCKS_PER_SEC / 1000);
+    std::cout << "dB函数运行时间:" << cpu_time_used << " 毫秒" << std::endl;
 
     double min_val, max_val;
     cv::minMaxLoc(log_mel_spec, &min_val, &max_val);
-
-    //printf("min_val:%lf", min_val);
-    //printf("max_val:%lf", max_val);
 
     if (max_val == min_val)
     {
@@ -150,7 +100,7 @@ int print(const char* inputPath)
         log_mel_spec[i] = (255.0 * (log_mel_spec[i] - min_val) / (max_val - min_val));
     }
 
-    cv::Mat melMat = vector2mat<float>(log_mel_spec, 1, mels_h);
+    cv::Mat melMat = CvUtils::Vector2Mat(log_mel_spec, 1, mels_h);
     melMat.convertTo(melMat, CV_8UC1);
 
     cv::Mat melColor;
@@ -160,9 +110,10 @@ int print(const char* inputPath)
     cv::resize(melColor, melColor, cv::Size(224, 224));
     cv::imwrite("./output/1.jpg", melColor);
 
-    end = clock();
-    cpu_time_used = ((double)(end - start)) / (CLOCKS_PER_SEC / 1000);
+    end_t = clock();
+    cpu_time_used = ((double)(end_t - start_t)) / (CLOCKS_PER_SEC / 1000);
     std::cout << "函数运行时间:" << cpu_time_used << " 毫秒" << std::endl;
+    std::cout << "=============================================" << std::endl;
 
     return 0;
 }

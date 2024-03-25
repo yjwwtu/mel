@@ -124,7 +124,7 @@ struct significant_decimals_impl
 };
 
 /** \internal
-  * print the matrix \a _m to the output stream \a s using the output format \a fmt */
+  * PrintMel the matrix \a _m to the output stream \a s using the output format \a fmt */
 template<typename Derived>
 std::ostream & print_matrix(std::ostream & s, const Derived& _m, const IOFormat& fmt)
 {
@@ -205,7 +205,7 @@ std::ostream & print_matrix(std::ostream & s, const Derived& _m, const IOFormat&
   *
   * Outputs the matrix, to the given stream.
   *
-  * If you wish to print the matrix with a format different than the default, use DenseBase::format().
+  * If you wish to PrintMel the matrix with a format different than the default, use DenseBase::format().
   *
   * It is also possible to change the default format by defining EIGEN_DEFAULT_IO_FORMAT before including Eigen headers.
   * If not defined, this will automatically be defined to Eigen::IOFormat(), that is the Eigen::IOFormat with default parameters.

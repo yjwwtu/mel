@@ -76,13 +76,14 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClCompile Include="librosa\audio_utils.cpp" />
+    <ClCompile Include="app\audio\audioutils.cpp" />
+    <ClCompile Include="app\opencv\cvutils.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="librosa\audio_utils.h" />
-    <ClInclude Include="librosa\cv_utils.h" />
-    <ClInclude Include="librosa\librosa.h" />
+    <ClInclude Include="app\audio\audioutils.h" />
+    <ClInclude Include="app\librosa\librosa.h" />
+    <ClInclude Include="app\opencv\cvutils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
